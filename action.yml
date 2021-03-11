@@ -26,12 +26,12 @@ runs:
     - id: determine
       run: |
 
-        IS_PUSH = ${{ github.event_name == 'push' }}
-        IS_PR = ${{ github.event_name == 'pull_request' }}
-        IS_PR_SYNC = ${{ github.event.action == 'synchronize' }}
-        IS_MASTER = ${{ github.ref == 'refs/heads/master' || github.base_ref == 'master'  }}
-        IS_DEVELOP = ${{ github.ref == 'refs/heads/develop' || github.base_ref == 'develop' }}
-        IS_SYNC_STAGING = ${{ contains(github.event.pull_request.labels.*.name, 'sync staging') }}
+        IS_PUSH="${{ github.event_name == 'push' }}"
+        IS_PR="${{ github.event_name == 'pull_request' }}"
+        IS_PR_SYNC="${{ github.event.action == 'synchronize' }}"
+        IS_MASTER="${{ github.ref == 'refs/heads/master' || github.base_ref == 'master'  }}"
+        IS_DEVELOP="${{ github.ref == 'refs/heads/develop' || github.base_ref == 'develop' }}"
+        IS_SYNC_STAGING="${{ contains(github.event.pull_request.labels.*.name, 'sync staging') }}"
 
         if [[ $IS_PR == 'true' && IS_PR_SYNC == 'true' ]]; then
           if [[ $IS_MASTER == 'true' ]]; then
