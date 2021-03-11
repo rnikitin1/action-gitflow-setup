@@ -1,0 +1,69 @@
+name: 'Setup git flow'
+description: 'Determine whether build and/or deploy and for which env (staging/production) depending on github event/action and target branch'
+inputs:
+  # TODO: implement inputs
+  # production-branch:
+  #   description: 'Defaults to master'
+  #   required: false
+  #   default: 'master'
+  # staging-branch:
+  #   description: 'Defaults to develop'
+  #   required: false
+  #   default: 'develop'
+outputs:
+  env:
+    description: "Environment: 'Staging' or 'Production'"
+    value: ${{ steps.determine.outputs.env }}
+  build:
+    description: "Build target: 'stage', 'prod' or 'none'"
+    value: ${{ steps.determine.outputs.build }}
+  deploy:
+    description: "Deploy target: 'stage', 'prod' or 'none'"
+    value: ${{ steps.determine.outputs.deploy }}
+env:
+  IS_PUSH: ${{ github.event_name == 'push' }}
+  IS_PR: ${{ github.event_name == 'pull_request' }}
+  IS_PR_SYNC: ${{ github.event.action == 'synchronize' }}
+  IS_MASTER: ${{ github.ref == 'refs/heads/master' || github.base_ref == 'master'  }}
+  IS_DEVELOP: ${{ github.ref == 'refs/heads/develop' || github.base_ref == 'develop' }}
+  IS_SYNC_STAGING: ${{ contains(github.event.pull_request.labels.*.name, 'sync staging') }}
+runs:
+  using: "composite"
+  steps:
+    - id: determine
+      run: |
+        if [[ $IS_PR == 'true' && IS_PR_SYNC == 'true' ]]; then
+          if [[ $IS_MASTER == 'true' ]]; then
+            echo "::set-output name=env::Staging"
+            echo "::set-output name=build::prod"
+          else
+            echo "::set-output name=env::Staging"
+            echo "::set-output name=build::stage"
+          fi
+
+          if [[ $IS_SYNC_STAGING == 'true' ]]; then
+            echo "::set-output name=deploy::stage"
+          else
+            echo "::set-output name=deploy::none"
+          fi
+
+        elif [[ $IS_PUSH == 'true' ]]; then
+          if [[ $IS_MASTER == 'true' ]]; then
+            echo "::set-output name=env::Production"
+            echo "::set-output name=build::prod"
+            echo "::set-output name=deploy::prod"
+          elif [[ $IS_DEVELOP == 'true' ]]; then
+            echo "::set-output name=env::Staging"
+            echo "::set-output name=build::stage"
+            echo "::set-output name=deploy::stage"
+          else
+            echo "::set-output name=env::Staging"
+            echo "::set-output name=build::none"
+            echo "::set-output name=deploy::none"
+          fi
+        else
+          echo "::set-output name=env::Staging"
+          echo "::set-output name=build::none"
+          echo "::set-output name=deploy::none"
+        fi
+      shell: bash
