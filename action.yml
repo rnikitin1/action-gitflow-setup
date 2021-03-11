@@ -1,7 +1,7 @@
 name: 'Setup git flow'
 description: 'Determine whether build and/or deploy and for which env (staging/production) depending on github event/action and target branch'
-inputs:
-  # TODO: implement inputs
+# TODO: implement inputs
+# inputs:
   # production-branch:
   #   description: 'Defaults to master'
   #   required: false
