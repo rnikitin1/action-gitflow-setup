@@ -1,16 +1,32 @@
-# Zajno's git flow setup
+# Git flow setup helper
 
-A composite Github actions that helps tp determine:
+A composite Github action that helps to determine:
 
 * Environment: Staging or Production
 * Build target: `stage`, `prod` or `none`
 * Deploy target: `stage`, `prod` or `none`
 
-based on `push` or `pull_request` events.
+based on `push` and `pull_request` events.
 
-Typical parent action setup:
+## Git Flow
+
+Case                            | Environment | Build   | Deploy
+--------                        | ----------- | -----   | ------
+Open/sync PR to `master`        | Production  | prod    | none
+Merge PR or Push to `master`    | Production  | prod    | prod
+Open/sync PR to `develop`       | Staging     | stage   | none
+Merge PR or Push to `develop`   | Staging     | stage   | stage
+**With `sync staging` label on PR:**
+Open/Sync PR to `master`        | Production  | prod    | stage
+Open/Sync PR to not `master`    | Staging     | stage   | stage
+
+
+## Usage
+
+Here's a typical setup:
 
 ```yaml
+
 on:
   pull_request:
     types: [ready_for_review, opened, synchronize, reopened]
@@ -22,4 +38,27 @@ on:
     branches:
       - master
       - develop
+
+jobs:
+  deploy:
+    if: github.event_name != 'pull_request' || github.event.pull_request.draft != true
+    runs-on: ubuntu-latest
+    steps:
+      # ...
+
+      - name: Determine Environment
+        id: det-env
+        uses: Zajno/action-gitflow-setup@main
+
+      # ...
+
+      - name: Deploy to staging
+        if: steps.det-env.outputs.deploy == 'stage'
+        run: yarn deploy:stage
+
+      - name: Deploy to production
+        if: steps.det-env.outputs.deploy == 'prod'
+        run: yarn deploy:prod
+
+      # ...
 ```
