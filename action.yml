@@ -41,7 +41,7 @@ runs:
         echo "Github PR base ref: ${{ github.base_ref }}"
         echo "IS_SYNC_STAGING: $IS_SYNC_STAGING"
 
-        if [[ $IS_PR == 'true' && IS_PR_SYNC == 'true' ]]; then
+        if [[ $IS_PR == 'true' && $IS_PR_SYNC == 'true' ]]; then
           echo "::set-output name=env::Staging"
 
           if [[ $IS_MASTER_BASE == 'true' ]]; then
