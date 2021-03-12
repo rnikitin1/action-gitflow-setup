@@ -29,16 +29,18 @@ runs:
         IS_PUSH="${{ github.event_name == 'push' }}"
         IS_PR="${{ github.event_name == 'pull_request' }}"
         IS_PR_SYNC="${{ github.event.action == 'synchronize' }}"
-        IS_MASTER="${{ github.ref == 'refs/heads/master' || github.base_ref == 'master'  }}"
-        IS_DEVELOP="${{ github.ref == 'refs/heads/develop' || github.base_ref == 'develop' }}"
+        IS_MASTER="${{ github.ref == 'refs/heads/master' }}"
+        IS_MASTER_BASE="${{ github.base_ref == 'master' }}"
+        IS_DEVELOP="${{ github.ref == 'refs/heads/develop' }}"
+        IS_DEVELOP_BASE="${{ github.base_ref == 'develop' }}"
         IS_SYNC_STAGING="${{ contains(github.event.pull_request.labels.*.name, 'sync staging') }}"
 
         if [[ $IS_PR == 'true' && IS_PR_SYNC == 'true' ]]; then
-          if [[ $IS_MASTER == 'true' ]]; then
-            echo "::set-output name=env::Staging"
+          echo "::set-output name=env::Staging"
+
+          if [[ $IS_MASTER_BASE == 'true' ]]; then
             echo "::set-output name=build::prod"
           else
-            echo "::set-output name=env::Staging"
             echo "::set-output name=build::stage"
           fi
 
