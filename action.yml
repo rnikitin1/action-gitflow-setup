@@ -35,6 +35,12 @@ runs:
         IS_DEVELOP_BASE="${{ github.base_ref == 'develop' }}"
         IS_SYNC_STAGING="${{ contains(github.event.pull_request.labels.*.name, 'sync staging') }}"
 
+        echo "Github event name: ${{ github.event_name }}"
+        echo "Github event action name: ${{ github.event.action }}"
+        echo "Github ref: ${{ github.ref }}"
+        echo "Github PR base ref: ${{ github.base_ref }}"
+        echo "IS_SYNC_STAGING: $IS_SYNC_STAGING"
+
         if [[ $IS_PR == 'true' && IS_PR_SYNC == 'true' ]]; then
           echo "::set-output name=env::Staging"
 
