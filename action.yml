@@ -23,10 +23,15 @@ outputs:
 runs:
   using: "composite"
   steps:
+    - name: Extract branch name
+      shell: bash
+      run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+      id: extract_branch
+
     - id: determine
       run: |
 
-        BRANCH_NAME="${{ github.base_ref }}"
+        BRANCH_NAME="${{ steps.extract_branch.outputs.branch }}"
         IS_PUSH="${{ github.event_name == 'push' }}"
         IS_PR="${{ github.event_name == 'pull_request' }}"
         IS_PR_SYNC="${{ github.event.action == 'synchronize' || github.event.action == 'ready_for_review' || github.event.action == 'opened' }}"
