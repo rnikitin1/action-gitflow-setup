@@ -39,7 +39,6 @@ runs:
         IS_SYNC_STAGING_PROD="${{ contains(github.event.pull_request.labels.*.name, 'sync staging prod') }}"
         IS_SYNC_BRANCH="${{ contains(github.event.pull_request.labels.*.name, 'sync branch') }}"
 
-        echo "${{ github.event.pull_request.labels | select(.name == 'sync branch')) }}"
         echo "${{ github.event.pull_request.labels | select(contains(.name, 'sync')) }}"
         echo "${{ select(github.event.pull_request.labels.*.name == 'sync branch) }}"
         echo "Github event name: ${{ github.event_name }}"
