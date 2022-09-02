@@ -27,7 +27,7 @@ runs:
       id: get_sync_env
       uses: mikefarah/yq@master
       with:
-        cmd: yq '.[] | select(.name == "sync *") |= sub("sync ", "")' github.event.pull_request.labels
+        cmd: yq '.[] | select(.name == "sync *") |= sub("sync ", "")' ${{ github.event.pull_request.labels }}
 
     - id: determine
       run: |
