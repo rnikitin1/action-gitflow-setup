@@ -10,6 +10,10 @@ description: 'Determine whether build and/or deploy and for which env (staging/p
   #   description: 'Defaults to develop'
   #   required: false
   #   default: 'develop'
+inputs:
+  envs:
+    description: 'A username passed from the caller workflow'
+    required: false
 outputs:
   env:
     description: "Environment: 'Staging' or 'Production'"
@@ -41,7 +45,6 @@ runs:
 
         echo "$INPUT_ENVS"
         echo "$INPUT_ENVS.env-qa]"
-        echo "get_sync_env: ${{ steps.get_sync_env.outputs.result }}"
         echo "Github event name: ${{ github.event_name }}"
         echo "Github event action name: ${{ github.event.action }}"
         echo "Github ref: ${{ github.ref }}"
