@@ -23,12 +23,6 @@ outputs:
 runs:
   using: "composite"
   steps:
-    - name: Check yq lib
-      id: get_sync_env
-      uses: mikefarah/yq@master
-      with:
-        cmd: yq -n '.[] | select(.name == "sync *") |= sub("sync ", "")' ${{ github.event.pull_request.labels }}
-
     - id: determine
       run: |
 
@@ -45,6 +39,8 @@ runs:
         IS_SYNC_STAGING_PROD="${{ contains(github.event.pull_request.labels.*.name, 'sync staging prod') }}"
         IS_SYNC_BRANCH="${{ contains(github.event.pull_request.labels.*.name, 'sync branch') }}"
 
+        echo "$INPUT_ENVS"
+        echo "$INPUT_ENVS.env-qa]"
         echo "get_sync_env: ${{ steps.get_sync_env.outputs.result }}"
         echo "Github event name: ${{ github.event_name }}"
         echo "Github event action name: ${{ github.event.action }}"
