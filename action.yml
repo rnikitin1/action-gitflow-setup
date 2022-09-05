@@ -43,7 +43,7 @@ runs:
         IS_SYNC_STAGING_PROD="${{ contains(github.event.pull_request.labels.*.name, 'sync staging prod') }}"
         IS_SYNC_BRANCH="${{ contains(github.event.pull_request.labels.*.name, 'sync branch') }}"
 
-        echo "${{ inputs.envs }}"
+        echo "${{ inputs.env-qa }}"
         echo "Github event name: ${{ github.event_name }}"
         echo "Github event action name: ${{ github.event.action }}"
         echo "Github ref: ${{ github.ref }}"
