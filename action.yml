@@ -28,10 +28,44 @@ runs:
   using: "composite"
   steps:
     - name: Determine env from labels
-      uses: rnikitin1/action-gitflow-setup/js-action@no-develop
+      uses: actions/github-script@v5
       id: labels-checker
+      env:
+        GH_PR_LABELS: ${{ toJSON(github.event.pull_request.labels) }}
+        ENVS: ${{ inputs.envs }}
       with:
-        envs: ${{ inputs.envs }}
+        script: |
+          const { GH_PR_LABELS, ENVS } = process.env;
+          try {
+              console.log(`Input envs: `, ENVS);
+
+              const envs = JSON.parse(ENVS);
+              const githubEvent = github.context.payload;
+              console.log(`The event payload: `, githubEvent);
+
+              const labels = githubEvent.pull_request?.labels || [];
+              console.log('githubEvent labels', labels);
+
+              const labelNames = labels.map(l => l.name);
+              const isStagingSync = labelNames.includes('sync staging');
+              let env = null;
+
+              if (isStagingSync) {
+                  const envLabel = labelNames.find(name => !!envs[name]);
+                  env = envs[envLabel];
+
+                  console.log('Defined env: ', env);
+
+                  if (env) {
+                      core.setOutput("env", env);
+                  }
+              }
+
+              core.setOutput("isDefined", !!env);
+          } catch (error) {
+              console.log(`Error message: ${error.message}`);
+              core.setFailed(error.message);
+          }
 
     - id: determine
       run: |
