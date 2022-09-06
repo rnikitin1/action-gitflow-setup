@@ -27,10 +27,8 @@ outputs:
 runs:
   using: "composite"
   steps:
-    - name: Checkout
-      uses: actions/checkout@v3
     - name: Determine env from labels
-      uses: ./.github/actions/js-action
+      uses: rnikitin1/action-gitflow-setup/js-action@update-to-multienv
       id: labels-checker
       with:
         envs: ${{ inputs.envs }}
