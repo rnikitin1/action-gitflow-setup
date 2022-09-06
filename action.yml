@@ -35,9 +35,36 @@ runs:
         ENVS: ${{ inputs.envs }}
       with:
         script: |
-          const { GH_PR_LABELS, ENVS } = process.env;
-          console.log(`Input envs: `, ENVS);
-          
+          try {
+              const { GH_PR_LABELS, ENVS } = process.env;
+              console.log(`Input envs: `, ENVS);
+              console.log(`Input labels: `, GH_PR_LABELS);
+
+              const envs = JSON.parse(ENVS);
+              const labels = JSON.parse(GH_PR_LABELS);
+
+              console.log('githubEvent labels', labels);
+
+              const labelNames = labels.map(l => l.name);
+              const isStagingSync = labelNames.includes('sync staging');
+              let env = null;
+
+              if (isStagingSync) {
+                  const envLabel = labelNames.find(name => !!envs[name]);
+                  env = envs[envLabel];
+
+                  console.log('Defined env: ', env);
+
+                  if (env) {
+                      core.setOutput("env", env);
+                  }
+              }
+
+              core.setOutput("isDefined", !!env);
+          } catch (error) {
+              console.log(`Error message: ${error.message}`);
+              core.setFailed(error.message);
+          }
 
     - id: determine
       run: |
