@@ -28,7 +28,7 @@ runs:
   using: "composite"
   steps:
     - name: Determine env from labels
-      uses: rnikitin1/action-gitflow-setup/js-action@update-to-multienv
+      uses: rnikitin1/action-gitflow-setup/js-action@no-develop
       id: labels-checker
       with:
         envs: ${{ inputs.envs }}
