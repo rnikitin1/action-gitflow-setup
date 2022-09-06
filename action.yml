@@ -12,7 +12,7 @@ description: 'Determine whether build and/or deploy and for which env (staging/p
   #   default: 'develop'
 inputs:
   envs:
-    description: 'A username passed from the caller workflow'
+    description: 'JSON with available environments'
     required: false
 outputs:
   env:
@@ -27,6 +27,13 @@ outputs:
 runs:
   using: "composite"
   steps:
+    - name: Determine env from labels
+      uses: ./js-action
+      id: labels-checker
+      with:
+        envs: ${{ inputs.envs }}
+        labels: ${{ toJSON(github.event.pull_request.labels) }}
+
     - id: determine
       run: |
 
@@ -43,7 +50,8 @@ runs:
         IS_SYNC_STAGING_PROD="${{ contains(github.event.pull_request.labels.*.name, 'sync staging prod') }}"
         IS_SYNC_BRANCH="${{ contains(github.event.pull_request.labels.*.name, 'sync branch') }}"
 
-        echo "${{ inputs.env-qa }}"
+        echo "${{ inputs.envs }}"
+        echo "get_sync_env: ${{ steps.labels-checker.outputs.time }}"
         echo "Github event name: ${{ github.event_name }}"
         echo "Github event action name: ${{ github.event.action }}"
         echo "Github ref: ${{ github.ref }}"

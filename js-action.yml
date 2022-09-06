@@ -1,0 +1,17 @@
+name: 'Determine env from labels'
+description: 'Check Github labels and determine environment base on it'
+inputs:
+  envs:
+    description: 'JSON with environments'
+    required: true
+    default: '{}'
+  labels:
+    description: 'JSON with Github labels'
+    required: true
+    default: '{}'
+outputs:
+  time:
+    description: 'The time we greeted you'
+runs:
+  using: 'node16'
+  main: 'index.js'
