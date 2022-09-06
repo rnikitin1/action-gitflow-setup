@@ -8,7 +8,9 @@ try {
     const envs = JSON.parse(envsJSON);
     const githubEvent = github.context.payload;
     console.log(`The event payload: `, githubEvent);
-    console.log('githubEvent labels', githubEvent.pull_request.labels);
+
+    const labels = githubEvent.pull_request?.labels || [];
+    console.log('githubEvent labels', labels);
 
     const labelNames = labels.map(l => l.name);
     const isStagingSync = labelNames.includes('sync staging');
