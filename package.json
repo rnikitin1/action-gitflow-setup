@@ -2,7 +2,7 @@
   "name": "action-gitflow-setup",
   "version": "1.0.0",
   "description": "A composite Github action that helps to determine:",
-  "main": "index.js",
+  "main": "js-action/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },

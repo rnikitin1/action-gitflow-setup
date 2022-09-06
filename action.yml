@@ -30,7 +30,7 @@ runs:
     - name: Checkout
       uses: actions/checkout@v3
     - name: Determine env from labels
-      uses: ./js-action.yml
+      uses: ./js-action
       id: labels-checker
       with:
         envs: ${{ inputs.envs }}
