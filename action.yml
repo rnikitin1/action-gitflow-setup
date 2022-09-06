@@ -10,6 +10,10 @@ description: 'Determine whether build and/or deploy and for which env (staging/p
   #   description: 'Defaults to develop'
   #   required: false
   #   default: 'develop'
+inputs:
+  envs:
+    description: 'JSON with available environments'
+    required: false
 outputs:
   env:
     description: "Environment: 'Staging' or 'Production'"
@@ -23,6 +27,12 @@ outputs:
 runs:
   using: "composite"
   steps:
+    - name: Determine env from labels
+      uses: rnikitin1/action-gitflow-setup/js-action@update-to-multienv
+      id: labels-checker
+      with:
+        envs: ${{ inputs.envs }}
+
     - id: determine
       run: |
 
@@ -36,7 +46,12 @@ runs:
         IS_DEVELOP_BASE="${{ github.base_ref == 'develop' }}"
         IS_SYNC_STAGING="${{ contains(github.event.pull_request.labels.*.name, 'sync staging') }}"
         IS_SYNC_STAGING_PROD="${{ contains(github.event.pull_request.labels.*.name, 'sync staging prod') }}"
+        IS_SYNC_CUSTOM="${{ steps.labels-checker.outputs.isDefined }}"
+        CUSTOM_ENV="${{ steps.labels-checker.outputs.env }}"
 
+        echo "${{ inputs.envs }}"
+        echo "labels-checker isDefined: ${{ steps.labels-checker.outputs.isDefined }}"
+        echo "labels-checker env: ${{ steps.labels-checker.outputs.env }}"
         echo "Github event name: ${{ github.event_name }}"
         echo "Github event action name: ${{ github.event.action }}"
         echo "Github ref: ${{ github.ref }}"
@@ -49,11 +64,15 @@ runs:
 
           if [[ $IS_SYNC_STAGING_PROD == 'true' ]]; then
             echo "::set-output name=build::prod"
+          elif [[ $IS_SYNC_CUSTOM == 'true' ]]; then
+            echo "::set-output name=build::$CUSTOM_ENV"
           else
             echo "::set-output name=build::stage"
           fi
 
-          if [[ $IS_SYNC_STAGING == 'true' || $IS_SYNC_STAGING_PROD == 'true' ]]; then
+          if [[ $IS_SYNC_STAGING == 'true' && $IS_SYNC_CUSTOM == 'true' ]]; then
+            echo "::set-output name=deploy::$CUSTOM_ENV"
+          elif [[ $IS_SYNC_STAGING == 'true' || $IS_SYNC_STAGING_PROD == 'true' ]]; then
             echo "::set-output name=deploy::stage"
           else
             echo "::set-output name=deploy::none"
