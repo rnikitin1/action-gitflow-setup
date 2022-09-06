@@ -40,10 +40,8 @@ runs:
               console.log(`Input envs: `, ENVS);
               console.log(`Input labels: `, GH_PR_LABELS);
 
-              const envs = JSON.parse(ENVS);
+              const envs = ENVS ? JSON.parse(ENVS) : {};
               const labels = JSON.parse(GH_PR_LABELS);
-
-              console.log('githubEvent labels', labels);
 
               const labelNames = labels.map(l => l.name);
               const isStagingSync = labelNames.includes('sync staging');
