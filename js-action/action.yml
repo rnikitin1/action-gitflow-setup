@@ -5,13 +5,11 @@ inputs:
     description: 'JSON with environments'
     required: true
     default: '{}'
-  labels:
-    description: 'JSON with Github labels'
-    required: true
-    default: '{}'
 outputs:
-  time:
-    description: 'The time we greeted you'
+  env:
+    description: 'Defined env from PR labels'
+  isDefined:
+    description: 'If env is defined or not'
 runs:
   using: 'node16'
   main: 'index.js'
