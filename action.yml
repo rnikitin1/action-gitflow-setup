@@ -27,6 +27,11 @@ outputs:
 runs:
   using: "composite"
   steps:
+    - uses: actions/setup-node@master
+      with:
+        node-version: '14'
+        cache: 'yarn'
+
     - name: Determine env from labels
       uses: actions/github-script@v5
       id: labels-checker
